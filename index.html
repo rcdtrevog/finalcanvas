@@ -8,6 +8,7 @@
     <title>Vite App</title>
   </head>
   <body>
+
     <button id="threeDToggleBtn">Change to 3D View</button>
     <!-- <button id="threeDOutlineBtn">Wall Outline - OFF</button> -->
     <button id="correctedWallTaskBtn">Corrected Wall</button>
@@ -132,18 +133,17 @@
     </button>
     <button id="clearAllBtn">Clear All</button>
     <button id="subAreaBtn">Sub Area</button>
-    <button id="tempBtn">Temp Btn</button>
+    <button id="removePointsBtn">Remove Point</button>
 
     <button id="edgePoint">
       <div>
-        <span>Edge Point : </span>
+        <span>Select Line : </span>
         <label
           ><input
             type="radio"
             class="eachEdge"
             name="edges"
             value="1"
-            checked
           />1</label
         >
         <label
@@ -163,27 +163,28 @@
           />3</label
         >
         <label
-        ><input
-          type="radio"
-          class="eachEdge"
-          name="edges"
-          value="4"
-        />4</label
-      >
-      <label
-      ><input
-        type="radio"
-        class="eachEdge"
-        name="edges"
-        value="5"
-      />5</label
-    >
+          ><input
+            type="radio"
+            class="eachEdge"
+            name="edges"
+            value="4"
+          />4</label
+        >
+        <label
+          ><input
+            type="radio"
+            class="eachEdge"
+            name="edges"
+            value="5"
+          />5</label
+        >
       </div>
     </button>
 
     <button id="addPoints">Add Points</button>
 
     <canvas id="canvas"></canvas>
+
     <script type="module" src="/script.js"></script>
   </body>
 </html>

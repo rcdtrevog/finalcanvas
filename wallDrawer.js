@@ -2,6 +2,10 @@
 import * as THREE from "three";
 
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader";
+import SubAreaDrawer from "./subAreaDrawer.js";
+
+const subAreaDrawer = new SubAreaDrawer();
+
 
 class WallDrawer extends THREE.Object3D {
   constructor() {
@@ -86,193 +90,10 @@ class WallDrawer extends THREE.Object3D {
         .copy(line.start)
         .addScaledVector(perpendicular, -wallWidth / 2);
 
-      if (wallEditor.isSubAreaActivated) {
-        let newP1 = new THREE.Vector3().copy(line.start);
-        let newP2 = new THREE.Vector3().copy(line.end);
-
-        const snapDistance = 0.07;
-
-        if (!wallEditor.firstNewP1) {
-          wallEditor.firstNewP1 = new THREE.Vector3().copy(newP1); // Store the first starting point
-        }
-
-        if (wallEditor.lastEndPoint) {
-          newP1.copy(wallEditor.lastEndPoint);
-        }
-
-        wallEditor.lastEndPoint = newP2.clone();
-
-        // const cornerPoints = [{ x: newP2.x, y: newP2.y }]; //Generally it draws 2 points staring point and ending point we only wanted the ending point to draw dots
-        // const outlineVertices = [newP1.x, newP1.y, 0, newP2.x, newP2.y, 0];
-
-        // wallEditor.allVerticesofSubArea.push(newP2.x, newP2.y, 0);
-
-        ////////////////////////////////////////////////////now changes///////////////////////////
-        // console.log(wallEditor.subAreaGroupID)
-
-        if (wallEditor.subAreafirstLineDrawn) {
-          const distanceToStart = newP2.distanceTo(wallEditor.firstNewP1);
-          // console.log(wallEditor.subAreaGroupID)
-          if (distanceToStart < snapDistance) {
-            wallEditor.linesArray[wallEditor.linesArray.length - 1].start =
-              wallEditor.firstNewP1; //doing this because of snapping point the the starting point dosent change the values in the values array
-            wallEditor.linesArray[wallEditor.linesArray.length - 1].end =
-              wallEditor.firstNewP1;
-
-            wallEditor.isSubAreaCompleted = true;
-
-            console.log(wallEditor.spherePosition);
-
-            const cornerPoints =
-              wallEditor.spherePosition[wallEditor.subAreaGroupID];
-            const shape = new THREE.Shape();
-
-            shape.moveTo(cornerPoints[0].x, cornerPoints[0].y); // Move to the starting point
-
-            for (let i = 1; i < cornerPoints.length; i++) {
-              const point = cornerPoints[i];
-              shape.lineTo(point.x, point.y);
-            }
-
-            // Close the shape by drawing a line from the last point to the starting point
-            shape.lineTo(cornerPoints[0].x, cornerPoints[0].y);
-
-            const geometry = new THREE.ShapeGeometry(shape);
-            const material = new THREE.MeshBasicMaterial({
-              color: line.color,
-              side: THREE.DoubleSide,
-            });
-
-
-            geometry.userData.id = wallEditor.subAreaGroupID;
-
-            const mesh = new THREE.Mesh(geometry, material);
-
-            mesh.addEventListener('click', () => {
-              console.log('Mesh clicked:', mesh.geometry.userData.id);
-          });
-
-          mesh.addEventListener('mouseover', () => {
-            console.log('Mesh hovered:', mesh.geometry.userData.id);
-        });
-
-            wallEditor.scene.add(mesh);
-
-            console.log(mesh);
-
-
-            wallEditor.allVerticesofSubArea = [];
-            newP2.copy(wallEditor.firstNewP1);
-            wallEditor.isSubAreaActivated = false;
-            wallEditor.lastEndPoint = null;
-            wallEditor.firstNewP1 = null; // Reset firstNewP1
-            wallEditor.subAreafirstLineDrawn = false;
-
-
-            console.log('before points') 
-            console.log(wallEditor.spherePosition[1])
-
-            if(wallEditor.subAreaTempLine){//when it snaps the last temp line was visible so did this
-              wallEditor.scene.remove(wallEditor.subAreaTempLine)
-            }
-
-          }
-        } else {
-          wallEditor.subAreafirstLineDrawn = true;
-        }
-
-        const cornerPoints = [{ x: newP2.x, y: newP2.y }];
-
-        // Store each sphere position in the spherePosition object
-        if (!wallEditor.spherePosition[wallEditor.subAreaGroupID]) {
-          wallEditor.spherePosition[wallEditor.subAreaGroupID] = [];
-        }
-        wallEditor.spherePosition[wallEditor.subAreaGroupID].push(
-          ...cornerPoints
-        );
-
-        console.log(wallEditor.spherePosition);
-
-        // console.log(cornerPoints)
-        // console.log(wallEditor.lineDots)
-        const outlineVertices = [newP1.x, newP1.y, 0, newP2.x, newP2.y, 0];
-
-        // wallEditor.allVerticesofSubArea.push(newP2.x, newP2.y, 0);
-
-        const outlineGeometry = new THREE.BufferGeometry();
-        outlineGeometry.setAttribute(
-          "position",
-          new THREE.Float32BufferAttribute(outlineVertices, 3)
-        );
-
-        // outlineGeometry.userData.id = wallEditor.subAreaGroupID;
-        // console.log(wallEditor.subAreaGroupID)
-
-        // if(wallEditor.isSubAreaCompleted){
-        //   outlineGeometry.userData.id = (wallEditor.subAreaGroupID - 1).toString();
-        // }else{
-        outlineGeometry.userData.id = wallEditor.subAreaGroupID;
-        // }
-        console.log(wallEditor.subAreaGroupID);
-
-        const outlineMaterial = new THREE.LineBasicMaterial({
-          color: line.color,
-          // color:'gold'
-        });
-        const outlineMesh = new THREE.LineSegments(
-          outlineGeometry,
-          outlineMaterial
-        );
-
-        // Add corner points as spheres
-        const sphereGeometry = new THREE.SphereGeometry(0.01, 32, 32);
-        sphereGeometry.userData.id = wallEditor.subAreaGroupID;
-
-        const sphereMaterial = new THREE.MeshBasicMaterial({
-          color: "#9BCF53",
-        });
-
-        // Create a group to hold the spheres
-        [...cornerPoints].forEach((point) => {
-          const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-          sphere.position.set(point.x, point.y, 0);
-          sphere.userData.id = wallEditor.subAreaGroupID;
-          wallEditor.dotsGroup.add(sphere);
-
-          // Store each sphere in the lineDots object
-          if (!wallEditor.lineDots[wallEditor.subAreaGroupID]) {
-            wallEditor.lineDots[wallEditor.subAreaGroupID] = [];
-          }
-          wallEditor.lineDots[wallEditor.subAreaGroupID].push(sphere);
-
-          // Store each sphere position in the spherePosition object
-          // if (!wallEditor.spherePosition[wallEditor.subAreaGroupID]) {
-          //   wallEditor.spherePosition[wallEditor.subAreaGroupID] = [];
-          // }
-          // wallEditor.spherePosition[wallEditor.subAreaGroupID].push(...cornerPoints);
-        });
-
-        // console.log(wallEditor.lineDots)
-
-        wallEditor.scene.add(wallEditor.dotsGroup); // Add the dotsGroup to the scene
-
-        wallEditor.subAreaOutlineMesh = outlineMesh;
-        if (wallEditor.isSubAreaCompleted) {
-          // wallEditor.subAreaOutlineMesh.geometry.userData.id = `${wallEditor.subAreaOutlineMesh.geometry.userData.id - 1}`
-          console.log('check --------------------------------------------',wallEditor.subAreaOutlineMesh.geometry.userData.id);
-
-          if (wallEditor.lineDots[wallEditor.subAreaGroupID]) {
-            wallEditor.lineDots[wallEditor.subAreaGroupID].forEach((dot) => {
-              dot.visible = !dot.visible;
-            });
-          }
-        }
-
-        wallEditor.scene.add(wallEditor.subAreaOutlineMesh);
-        // console.log(wallEditor.scene.children);
-
-        // console.log(wallEditor.linesArray[wallEditor.linesArray.length-1])
-      } else if (line.wallPattern === "solidFill") {
+      if(wallEditor.isSubAreaActivated){
+        subAreaDrawer.drawSubArea(line)
+      }
+      else if (line.wallPattern === "solidFill") {
         this.createSolidFill(p1, p2, p3, p4, line.color);
         // wallEditor.tempArr.push(this.createSolidFill(p1, p2, p3, p4, line.color))
 

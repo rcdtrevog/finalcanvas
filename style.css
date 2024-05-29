@@ -3,6 +3,20 @@
   padding: 0;
 }
 
+
+/* #canvas {
+  width: 800px;
+  height: 600px;
+  position: relative;
+}
+.label {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+} */
+
 canvas {
   /* position: fixed; */
   display: block;
@@ -137,7 +151,7 @@ canvas {
   display: block;
   cursor: pointer;
 }
-#tempBtn {
+#removePointsBtn {
   position: absolute;
   top: 370px;
   left: 10px;

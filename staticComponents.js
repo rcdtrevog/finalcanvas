@@ -47,6 +47,8 @@ class StaticComponents {
         wallEditor.controls.update();
       }
       wallEditor.renderer.render(wallEditor.scene, wallEditor.camera);
+      // wallEditor.cssRenderer.render(wallEditor.scene, wallEditor.camera);
+
     };
     animate();
   }
