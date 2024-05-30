@@ -45,7 +45,7 @@ class MouseClickActivity {
   }
 
   onMouseDown(event) {
-    console.log(wallEditor.activateAddPoints);
+    // console.log('Add Points Activated : ',wallEditor.activateAddPoints);
 
     if (event.ctrlKey && wallEditor.activateAddPoints) {
       subAreaDrawer.addPoints(event);
@@ -78,6 +78,7 @@ class MouseClickActivity {
     }
 
     if (event.ctrlKey && !wallEditor.activateAddPoints) {
+      console.log(wallEditor.activateAddPoints);
       subAreaDrawer.stretchSubArea(event);
     }
   }
@@ -249,8 +250,8 @@ class MouseClickActivity {
             'input[name="edges"]:checked'
           );
           if (selectedEdge) {
-            // wallEditor.selectedEdgePoint = selectedEdge.value;
-            // console.log("Selected Edge Point:", wallEditor.selectedEdgePoint);
+            wallEditor.selectedLine = selectedEdge.value;
+            console.log("Selected Line:", wallEditor.selectedLine);
           }
         }
       });
@@ -260,113 +261,13 @@ class MouseClickActivity {
       console.log("Adding Points", wallEditor.activateAddPoints);
     });
 
-    document.getElementById("removePointsBtn").addEventListener("click", (event) => {
-      console.log("Temp");
-      staticComponents.clearScene(wallEditor.scene);
-
-
-      ////
-
-      // wallEditor.scene.children.forEach((each) => {
-      //   if (each.isLine && each.userData.id === wallEditor.subAreaGroupID) {
-      //     wallEditor.scene.remove(each);
-      //   }
-      // });
-
-      // wallEditor.dotsGroup.children.forEach((child) => {
-      //   wallEditor.dotsGroup.remove(child);
-      // });
-
-
-      // //removing the mesh
-      // wallEditor.scene.children.forEach((each) => {
-      //   if (each.isMesh && each.userData.id === "1") {
-      //     wallEditor.scene.remove(each);
-      //   }
-      // });
-
-      ///
-
-
-
-      let points = wallEditor.spherePosition[1];
-      console.log(points);
-      wallEditor.spherePosition[1].splice(wallEditor.selectedEdgePoint - 1, 1);
-      console.log(wallEditor.spherePosition[1]);
-
-      const outlinePoints = [];
-      const shape = new THREE.Shape();
-
-      shape.moveTo(points[0].x, points[0].y); // Move to the starting point
-
-      //setting the closing point to the strting point
-      wallEditor.spherePosition[1][wallEditor.spherePosition[1].length - 1] =
-        wallEditor.spherePosition[1][0];
-
-      for (let i = 0; i < points.length; i++) {
-        shape.lineTo(points[i].x, points[i].y);
-        outlinePoints.push(new THREE.Vector3(points[i].x, points[i].y, 0));
-      }
-
-      // Close the shape by drawing a line from the last point to the starting point
-      shape.lineTo(points[0].x, points[0].y);
-
-      let tempSpherePointer = 0;
-
-      const sphereGeometry = new THREE.SphereGeometry(0.01, 32, 32);
-      //  sphereGeometry.userData.id = wallEditor.subAreaGroupID;
-
-      const sphereMaterial = new THREE.MeshBasicMaterial({
-        color: "#9BCF53",
+    document
+      .getElementById("removePointsBtn")
+      .addEventListener("click", (event) => {
+        wallEditor.activateRemovePoint = !wallEditor.activateRemovePoint;
+        console.log("Remove Activated : ", wallEditor.activateRemovePoint);
+        // subAreaDrawer.removePointBtn(event);
       });
-
-      [...points].forEach((point) => {
-        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        sphere.position.set(point.x, point.y, 0);
-        sphere.userData.id = wallEditor.subAreaGroupID;
-
-        tempSpherePointer = tempSpherePointer + 1;
-        sphere.userData.sphereId = tempSpherePointer;
-
-        wallEditor.dotsGroup.add(sphere);
-        wallEditor.scene.add(wallEditor.dotsGroup);
-
-        if (wallEditor.lineDots[wallEditor.subAreaGroupID]) {
-          wallEditor.lineDots[wallEditor.subAreaGroupID] = [];
-          wallEditor.lineDots[wallEditor.subAreaGroupID].push(sphere);
-        }
-      });
-
-      const outlineGeometry = new THREE.BufferGeometry().setFromPoints(
-        outlinePoints
-      );
-
-      outlineGeometry.userData.id = wallEditor.subAreaGroupID;
-      console.log(wallEditor.subAreaGroupID);
-
-      const outlineMaterial = new THREE.LineBasicMaterial({
-        color: wallEditor.color,
-        color: "blue",
-      });
-      const outlineMesh = new THREE.Line(outlineGeometry, outlineMaterial);
-      outlineMesh.userData.id = wallEditor.subAreaGroupID;
-      console.log(outlineMesh);
-
-      wallEditor.subAreaOutlineMesh = outlineMesh;
-      wallEditor.scene.add(wallEditor.subAreaOutlineMesh);
-
-      const geometry = new THREE.ShapeGeometry(shape);
-      geometry.userData.id = wallEditor.subAreaGroupID;
-
-      const material = new THREE.MeshBasicMaterial({
-        color: 0xff0000,
-        side: THREE.DoubleSide,
-      });
-      const mesh = new THREE.Mesh(geometry, material);
-
-      mesh.userData.id = wallEditor.subAreaGroupID;
-      wallEditor.scene.add(mesh);
-    });
     // document.getElementById("tempBtn").addEventListener("click", (event) => {
     //   console.log("temp clicked");
     //   function findCenterOfPolygon() {

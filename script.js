@@ -9,11 +9,11 @@ import { CSS2DObject } from "three/examples/jsm/Addons.js";
 window.wallEditor = {};
 
 // wallEditor.selectedEdgePoint = 1;
-wallEditor.selectedEdgePoint = 1;
+wallEditor.selectedLine = 1;
 
 wallEditor.testing = {}
 
-
+wallEditor.activateRemovePoint = false
 
 
 wallEditor.latestMouseDownPosition = {};
