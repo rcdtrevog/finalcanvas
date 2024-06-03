@@ -47,7 +47,7 @@ class SubAreaDrawer {
 
           wallEditor.isSubAreaCompleted = true;
 
-          console.log(wallEditor.spherePosition);
+          // console.log(wallEditor.spherePosition);
 
           const cornerPoints =
             wallEditor.spherePosition[wallEditor.subAreaGroupID];
@@ -79,12 +79,12 @@ class SubAreaDrawer {
           });
 
           mesh.addEventListener("mouseover", () => {
-            console.log("Mesh hovered:", mesh.geometry.userData.id);
+            // console.log("Mesh hovered:", mesh.geometry.userData.id);
           });
 
           wallEditor.scene.add(mesh);
 
-          console.log(mesh);
+          // console.log(mesh);
 
           wallEditor.allVerticesofSubArea = [];
           newP2.copy(wallEditor.firstNewP1);
@@ -93,8 +93,8 @@ class SubAreaDrawer {
           wallEditor.firstNewP1 = null; // Reset firstNewP1
           wallEditor.subAreafirstLineDrawn = false;
 
-          console.log("before points");
-          console.log(wallEditor.spherePosition[1]);
+          // console.log("before points");
+          // console.log(wallEditor.spherePosition[1]);
 
           if (wallEditor.subAreaTempLine) {
             //when it snaps the last temp line was visible so did this
@@ -115,7 +115,7 @@ class SubAreaDrawer {
         ...cornerPoints
       );
 
-      console.log(wallEditor.spherePosition);
+      // console.log(wallEditor.spherePosition);
 
       // console.log(cornerPoints)
       // console.log(wallEditor.lineDots)
@@ -137,10 +137,10 @@ class SubAreaDrawer {
       // }else{
       outlineGeometry.userData.id = wallEditor.subAreaGroupID;
       wallEditor.subAreaLineId = wallEditor.subAreaLineId + 1;
-      outlineGeometry.userData.lineId = wallEditor.subAreaLineId;
+      outlineGeometry.userData.lineId = wallEditor.subAreaLineId - 1; ////////////
 
       // }
-      console.log(wallEditor.subAreaGroupID);
+      // console.log(wallEditor.subAreaGroupID);
 
       const outlineMaterial = new THREE.LineBasicMaterial({
         color: line.color,
@@ -188,7 +188,7 @@ class SubAreaDrawer {
       wallEditor.subAreaOutlineMesh = outlineMesh;
       if (wallEditor.isSubAreaCompleted) {
         wallEditor.dotsGroup.children.pop();
-        console.log(wallEditor.dotsGroup.children);
+        // console.log(wallEditor.dotsGroup.children);
 
         if (wallEditor.lineDots[wallEditor.subAreaGroupID]) {
           wallEditor.lineDots[wallEditor.subAreaGroupID].forEach((dot) => {
@@ -198,6 +198,8 @@ class SubAreaDrawer {
       }
 
       wallEditor.scene.add(wallEditor.subAreaOutlineMesh);
+      // wallEditor.scene.add(outlineMesh);
+
       // console.log(wallEditor.scene.children);
 
       // console.log(wallEditor.linesArray[wallEditor.linesArray.length-1])
@@ -228,8 +230,8 @@ class SubAreaDrawer {
         true
       );
 
-      let minDistance = Infinity;
-      let clickedLine = null;
+      // let minDistance = Infinity;
+      // let clickedLine = null;
 
       // if (intersects.length > 0) {
       //   for (const intersect of intersects) {
@@ -245,23 +247,23 @@ class SubAreaDrawer {
       //     }
       //   }
       // }
-      if (intersects.length > 0) {
-        for (const intersect of intersects) {
-          if (intersect.object.geometry.userData.lineId !== undefined) {
-            const linePosition = intersect.object.position.clone();
-            const distanceToLine = linePosition.distanceTo(raycaster.ray.origin);
-      
-            if (distanceToLine < minDistance) {
-              minDistance = distanceToLine;
-              clickedLine = intersect.object.geometry.userData.lineId;
-            }
-          }
-        }
-      
-        if (clickedLine !== null) {
-          console.log(`Line Number Selected: ${clickedLine}`);
-        }
-      }
+      // if (intersects.length > 0) {
+      //   for (const intersect of intersects) {
+      //     if (intersect.object.geometry.userData.lineId !== undefined) {
+      //       const linePosition = intersect.object.position.clone();
+      //       const distanceToLine = linePosition.distanceTo(raycaster.ray.origin);
+
+      //       if (distanceToLine < minDistance) {
+      //         minDistance = distanceToLine;
+      //         clickedLine = intersect.object.geometry.userData.lineId;
+      //       }
+      //     }
+      //   }
+
+      //   if (clickedLine !== null) {
+      //     console.log(`Line Number Selected: ${clickedLine}`);
+      //   }
+      // }
 
       let previousSelectedDot = null;
 
@@ -273,17 +275,6 @@ class SubAreaDrawer {
         } //////////
 
         for (const intersect of intersects) {
-          // if (intersect.object.geometry.userData.lineId !== undefined) {
-          //   console.log(`
-
-          //   `);
-          //   console.log(
-          //     "Line Number Selected: ",
-          //     intersect.object.geometry.userData.lineId
-          //   );
-          //   break;
-          // }
-
           if (intersect.object.userData.sphereId) {
             console.log(
               "Edge Point Selected : ",
@@ -468,7 +459,7 @@ class SubAreaDrawer {
       });
     }
 
-    console.log(wallEditor.lineDots);
+    // console.log(wallEditor.lineDots);
   }
 
   getIntersectionPoint(event) {
@@ -503,6 +494,71 @@ class SubAreaDrawer {
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
+        /////////////////////////////////
+
+        function distanceToLine(point, line1, line2) {
+          const lineDirection = new THREE.Vector3().subVectors(line2, line1);
+          const lineLength = lineDirection.length();
+          lineDirection.normalize();
+
+          const pointToLine1 = new THREE.Vector3().subVectors(point, line1);
+          const projectedDistance = pointToLine1.dot(lineDirection);
+
+          if (projectedDistance < 0) {
+            return pointToLine1.length();
+          } else if (projectedDistance > lineLength) {
+            const pointToLine2 = new THREE.Vector3().subVectors(point, line2);
+            return pointToLine2.length();
+          } else {
+            const projectedPoint = new THREE.Vector3()
+              .copy(lineDirection)
+              .multiplyScalar(projectedDistance)
+              .add(line1);
+            return point.distanceTo(projectedPoint);
+          }
+        }
+
+        const mouseWorldPosition = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+        mouseWorldPosition.unproject(wallEditor.camera);
+
+        let minDistance = Infinity;
+        let clickedLine = null;
+
+        // Iterate over all lines in the scene
+        for (const child of wallEditor.scene.children) {
+          if (child.geometry && child.geometry.userData.lineId !== undefined) {
+            const lineGeometry = child.geometry;
+            const linePositions = lineGeometry.getAttribute("position").array;
+
+            // Iterate over line segments
+            for (let i = 0; i < linePositions.length - 3; i += 3) {
+              const start = new THREE.Vector3(
+                linePositions[i],
+                linePositions[i + 1],
+                linePositions[i + 2]
+              );
+              const end = new THREE.Vector3(
+                linePositions[i + 3],
+                linePositions[i + 4],
+                linePositions[i + 5]
+              );
+
+              const distance = distanceToLine(mouseWorldPosition, start, end);
+
+              if (distance < minDistance) {
+                minDistance = distance;
+                clickedLine = lineGeometry.userData.lineId;
+              }
+            }
+          }
+        }
+
+        if (clickedLine !== null) {
+          console.log(`Line Number Selected: ${clickedLine}`);
+          wallEditor.clickedLine = clickedLine;
+        }
+        ////////////////////////
+
         // Cast a ray from the mouse position
         raycaster.setFromCamera(mouse, wallEditor.camera);
 
@@ -512,7 +568,7 @@ class SubAreaDrawer {
           true
         );
 
-        if (intersects.length > 0) {
+        if (intersects.length > 0 && true) {
           for (const intersect of intersects) {
             ////////////////////////////
             if (intersect.object.isMesh) {
@@ -525,28 +581,9 @@ class SubAreaDrawer {
                   ///////////////////////////
                   let intersectionPoint = this.getIntersectionPoint(event);
 
-                  // const sphereGeometry = new THREE.SphereGeometry(0.01, 32, 32);
-                  // const sphereMaterial = new THREE.MeshBasicMaterial({
-                  //   color: "#9BCF53",
-                  // });
-
-                  // const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-                  // sphere.position.set(
-                  //   intersectionPoint.x,
-                  //   intersectionPoint.y,
-                  //   0
-                  // );
-
-                  console.log(intersectionPoint.x, intersectionPoint.y);
-
                   wallEditor.testing.x = intersectionPoint.x;
                   wallEditor.testing.y = intersectionPoint.y;
 
-                  //  sphere.userData.id = wallEditor.subAreaGroupID;
-
-                  // wallEditor.dotsGroup.add(sphere);
-
-                  // wallEditor.scene.add(wallEditor.dotsGroup);
                   //////////////////////////
                   wallEditor.activateAddPoints = false;
 
@@ -559,36 +596,21 @@ class SubAreaDrawer {
 
                   staticComponents.clearScene(wallEditor.scene);
 
-                  ////
-
-                  // wallEditor.scene.children.forEach((each) => {
-                  //   if (each.isLine && each.userData.id === wallEditor.subAreaGroupID) {
-                  //     wallEditor.scene.remove(each);
+                  // wallEditor.scene.children.forEach((child) => {
+                  //   if (child.userData.id === wallEditor.subAreaGroupID) {
+                  //     wallEditor.scene.remove(child);
                   //   }
                   // });
 
-                  // wallEditor.dotsGroup.children.forEach((child) => {
-                  //   wallEditor.dotsGroup.remove(child);
-                  // });
-
-                  // //removing the mesh
-                  // wallEditor.scene.children.forEach((each) => {
-                  //   if (each.isMesh && each.userData.id === "1") {
-                  //     wallEditor.scene.remove(each);
-                  //   }
-                  // });
-
-                  ///
-
-                  console.log(wallEditor.testing);
+                  // console.log(wallEditor.testing);
                   let points = wallEditor.spherePosition[1];
-                  console.log(points);
+                  // console.log(points);
                   wallEditor.spherePosition[1].splice(
-                    wallEditor.selectedLine,
+                    wallEditor.clickedLine,
                     0,
                     wallEditor.testing
                   );
-                  console.log(wallEditor.spherePosition[1]);
+                  // console.log(wallEditor.spherePosition[1]);
 
                   const outlinePoints = [];
                   const shape = new THREE.Shape();
@@ -640,26 +662,9 @@ class SubAreaDrawer {
                       );
                     }
                   });
-
-                  const outlineGeometry =
-                    new THREE.BufferGeometry().setFromPoints(outlinePoints);
-
-                  outlineGeometry.userData.id = wallEditor.subAreaGroupID;
-                  console.log(wallEditor.subAreaGroupID);
-
-                  const outlineMaterial = new THREE.LineBasicMaterial({
-                    color: wallEditor.color,
-                    color: "blue",
-                  });
-                  const outlineMesh = new THREE.Line(
-                    outlineGeometry,
-                    outlineMaterial
-                  );
-                  outlineMesh.userData.id = wallEditor.subAreaGroupID;
-                  console.log(outlineMesh);
-
-                  wallEditor.subAreaOutlineMesh = outlineMesh;
-                  wallEditor.scene.add(wallEditor.subAreaOutlineMesh);
+                  ///////////////////////////////
+                  this.updateLinesAgain(outlinePoints);
+                  this.removeDuplicateLineIds();
 
                   const geometry = new THREE.ShapeGeometry(shape);
                   geometry.userData.id = wallEditor.subAreaGroupID;
@@ -674,7 +679,7 @@ class SubAreaDrawer {
                   wallEditor.scene.add(mesh);
 
                   ////////////////////////////////////////////////////////
-                  console.log(wallEditor.testing);
+                  // console.log(wallEditor.testing);
 
                   break;
 
@@ -723,7 +728,7 @@ class SubAreaDrawer {
 
     outlineGeometry.userData.id = wallEditor.subAreaGroupID;
     // }
-    console.log(wallEditor.subAreaGroupID);
+    // console.log(wallEditor.subAreaGroupID);
 
     const outlineMaterial = new THREE.LineBasicMaterial({
       color: wallEditor.color,
@@ -743,9 +748,6 @@ class SubAreaDrawer {
 
     wallEditor.latestMouseDownPosition.x = [...intersectionPoint][0];
     wallEditor.latestMouseDownPosition.y = [...intersectionPoint][1];
-    console.log(wallEditor.latestMouseDownPosition);
-
-    //////////////
 
     wallEditor.lineDots[1].forEach((dot) => {
       dot.visible = true;
@@ -757,19 +759,15 @@ class SubAreaDrawer {
     //   }
     // });
 
-    console.log(wallEditor.linesArray);
     wallEditor.tempActivator = !wallEditor.tempActivator;
 
-    ////////////////////////////////////////////////
-
-    console.log(wallEditor.latestMouseDownPosition);
     wallEditor.spherePosition[1][wallEditor.selectedEdgePoint - 1] = {
       x: wallEditor.latestMouseDownPosition.x,
       y: wallEditor.latestMouseDownPosition.y,
     };
 
     let points = wallEditor.spherePosition[1];
-    console.log(points);
+    // console.log(points);
 
     const shape = new THREE.Shape();
 
@@ -785,37 +783,25 @@ class SubAreaDrawer {
       shape.lineTo(points[i].x, points[i].y);
       outlinePoints.push(new THREE.Vector3(points[i].x, points[i].y, 0));
     }
-    console.log(outlinePoints);
+    // console.log(outlinePoints);
 
     // Close the shape by drawing a line from the last point to the starting point
     shape.lineTo(points[0].x, points[0].y);
 
-    ///////////////////////////////////
 
-    const outlineGeometry = new THREE.BufferGeometry().setFromPoints(
-      outlinePoints
-    );
-
-    outlineGeometry.userData.id = wallEditor.subAreaGroupID;
-    console.log(wallEditor.subAreaGroupID);
-
-    const outlineMaterial = new THREE.LineBasicMaterial({
-      color: wallEditor.color,
-      color: "blue",
-    });
-    const outlineMesh = new THREE.Line(outlineGeometry, outlineMaterial);
-    outlineMesh.userData.id = wallEditor.subAreaGroupID;
-    console.log(outlineMesh);
-
-    //removing the old lines
-    wallEditor.scene.children.forEach((each) => {
-      if (each.isLine && each.userData.id === wallEditor.subAreaGroupID) {
-        wallEditor.scene.remove(each);
+    wallEditor.scene.children.forEach((child) => {
+      if (child.userData.id === wallEditor.subAreaGroupID) {
+        wallEditor.scene.remove(child);
       }
     });
 
-    wallEditor.subAreaOutlineMesh = outlineMesh;
-    wallEditor.scene.add(wallEditor.subAreaOutlineMesh);
+    // staticComponents.clearScene(wallEditor.scene);
+
+
+    //try clearing the scene
+    this.updateLinesAgain(outlinePoints);
+    this.removeDuplicateLineIds();
+
 
     ///////////////////////////////////////////////////
 
@@ -901,21 +887,15 @@ class SubAreaDrawer {
 
       removeDuplicateSpheres();
 
+      // this.removeDuplicateLineIds();
+
       ///////////
     });
     wallEditor.dotsGroup.children.pop();
 
     /////////////////////
 
-    wallEditor.dotsGroup.children.forEach((eachDot) => {
-      console.log(eachDot.userData.sphereId);
-      if (eachDot.userData.sphereId === wallEditor.selectedEdgePoint) {
-        // eachDot.material.color.set("green");
-
-        // eachDot.material.color.set("yellow")
-        console.log("success");
-      }
-    });
+  
     //////////////////////
 
     // Initialize all dots to green when creating the dots
@@ -931,25 +911,65 @@ class SubAreaDrawer {
     //   selectedDot.material.color.set("green");
     // }
   }
+
+  removeDuplicateLineIds() {
+    const seenIds = new Set();
+    const linesToRemove = [];
+
+    for (const child of wallEditor.scene.children) {
+      if (
+        child.geometry &&
+        child.geometry.userData &&
+        child.geometry.userData.lineId !== undefined
+      ) {
+        const lineId = child.geometry.userData.lineId;
+        if (seenIds.has(lineId)) {
+          linesToRemove.push(child);
+        } else {
+          seenIds.add(lineId);
+        }
+      }
+    }
+
+    for (const line of linesToRemove) {
+      wallEditor.scene.remove(line);
+    }
+  }
+
+  updateLinesAgain(outlinePoints) {
+    for (let i = 0; i < outlinePoints.length; i++) {
+      const startPoint = outlinePoints[i];
+      const endPoint = outlinePoints[(i + 1) % outlinePoints.length]; // Loop back to the first point
+
+      const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+        startPoint,
+        endPoint,
+      ]);
+      lineGeometry.userData.id = wallEditor.subAreaGroupID;
+
+      // lineGeometry.userData.lineId = i ; // Assign a unique lineId
+      lineGeometry.userData.lineId = i + 1;
+
+      const lineMaterial = new THREE.LineBasicMaterial({
+        color: "blue",
+      });
+
+      const lineMesh = new THREE.Line(lineGeometry, lineMaterial);
+      // lineMesh.userData.lineId = i ; // Assign a unique lineId to the mesh
+
+      lineMesh.userData.lineId = i + 1;
+
+      lineMesh.userData.id = wallEditor.subAreaGroupID;
+
+      wallEditor.subAreaOutlineMesh = lineMesh;
+      wallEditor.scene.add(wallEditor.subAreaOutlineMesh);
+    }
+  }
   removePointBtn(removeId) {
     staticComponents.clearScene(wallEditor.scene);
-
-    ////
-
-    // wallEditor.scene.children.forEach((each) => {
-    //   if (each.isLine && each.userData.id === wallEditor.subAreaGroupID) {
-    //     wallEditor.scene.remove(each);
-    //   }
-    // });
-
-    // wallEditor.dotsGroup.children.forEach((child) => {
-    //   wallEditor.dotsGroup.remove(child);
-    // });
-
-    // //removing the mesh
-    // wallEditor.scene.children.forEach((each) => {
-    //   if (each.isMesh && each.userData.id === "1") {
-    //     wallEditor.scene.remove(each);
+    // wallEditor.scene.children.forEach((child) => {
+    //   if (child.userData.id === wallEditor.subAreaGroupID) {
+    //     wallEditor.scene.remove(child);
     //   }
     // });
 
@@ -1004,23 +1024,8 @@ class SubAreaDrawer {
     });
 
     ///Outline
-    const outlineGeometry = new THREE.BufferGeometry().setFromPoints(
-      outlinePoints
-    );
-
-    outlineGeometry.userData.id = wallEditor.subAreaGroupID;
-    console.log(wallEditor.subAreaGroupID);
-
-    const outlineMaterial = new THREE.LineBasicMaterial({
-      color: wallEditor.color,
-      color: "blue",
-    });
-    const outlineMesh = new THREE.Line(outlineGeometry, outlineMaterial);
-    outlineMesh.userData.id = wallEditor.subAreaGroupID;
-    console.log(outlineMesh);
-
-    wallEditor.subAreaOutlineMesh = outlineMesh;
-    wallEditor.scene.add(wallEditor.subAreaOutlineMesh);
+    this.updateLinesAgain(outlinePoints);
+    this.removeDuplicateLineIds();
 
     //Mesh
     const geometry = new THREE.ShapeGeometry(shape);

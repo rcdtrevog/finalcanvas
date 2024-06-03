@@ -15,7 +15,7 @@ class WallDrawer extends THREE.Object3D {
   }
 
   draw2DWall(line) {
-    console.log('line.start__________',line.start)
+    // console.log('line.start__________',line.start)
     // console.log(wallEditor.linesArray)
     const direction = new THREE.Vector3()
       .copy(line.end)
@@ -71,8 +71,8 @@ class WallDrawer extends THREE.Object3D {
     } else if (line.alignment === "Center") {
 
 
-      console.log('this is start',line.start)
-      console.log('this is end',line.end)
+      // console.log('this is start',line.start)
+      // console.log('this is end',line.end)
 
       const p1 = new THREE.Vector3()
         .copy(line.start)
@@ -273,11 +273,11 @@ class WallDrawer extends THREE.Object3D {
           if (distance < thresholdDistance) {
             wallEditor.linesArray[wallEditor.linesArray.length - 1].connnected = true
             wallEditor.linesArray[wallEditor.linesArray.length - 2].connnected = true
-            console.log(wallEditor.linesArray);
+            // console.log(wallEditor.linesArray);
             console.log('The lines are connected.');
 
           } else {
-              console.log(wallEditor.linesArray);
+              // console.log(wallEditor.linesArray);
               console.log('The lines are not connected.');
           }
         }

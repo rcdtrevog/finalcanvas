@@ -48,6 +48,76 @@ class MouseClickActivity {
     // console.log('Add Points Activated : ',wallEditor.activateAddPoints);
 
     if (event.ctrlKey && wallEditor.activateAddPoints) {
+      // const mouse = new THREE.Vector2();
+
+      // mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      // mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      // /////////////////////////////////TEsting
+
+      // function distanceToLine(point, line1, line2) {
+      //   const lineDirection = new THREE.Vector3().subVectors(line2, line1);
+      //   const lineLength = lineDirection.length();
+      //   lineDirection.normalize();
+
+      //   const pointToLine1 = new THREE.Vector3().subVectors(point, line1);
+      //   const projectedDistance = pointToLine1.dot(lineDirection);
+
+      //   if (projectedDistance < 0) {
+      //     return pointToLine1.length();
+      //   } else if (projectedDistance > lineLength) {
+      //     const pointToLine2 = new THREE.Vector3().subVectors(point, line2);
+      //     return pointToLine2.length();
+      //   } else {
+      //     const projectedPoint = new THREE.Vector3()
+      //       .copy(lineDirection)
+      //       .multiplyScalar(projectedDistance)
+      //       .add(line1);
+      //     return point.distanceTo(projectedPoint);
+      //   }
+      // }
+
+      // const mouseWorldPosition = new THREE.Vector3(mouse.x, mouse.y, 0.5);
+      // mouseWorldPosition.unproject(wallEditor.camera);
+
+      // let minDistance = Infinity;
+      // let clickedLine = null;
+
+      // // Iterate over all lines in the scene
+      // for (const child of wallEditor.scene.children) {
+      //   if (child.geometry && child.geometry.userData.lineId !== undefined) {
+      //     const lineGeometry = child.geometry;
+      //     const linePositions = lineGeometry.getAttribute("position").array;
+
+      //     // Iterate over line segments
+      //     for (let i = 0; i < linePositions.length - 3; i += 3) {
+      //       const start = new THREE.Vector3(
+      //         linePositions[i],
+      //         linePositions[i + 1],
+      //         linePositions[i + 2]
+      //       );
+      //       const end = new THREE.Vector3(
+      //         linePositions[i + 3],
+      //         linePositions[i + 4],
+      //         linePositions[i + 5]
+      //       );
+
+      //       const distance = distanceToLine(mouseWorldPosition, start, end);
+
+      //       if (distance < minDistance) {
+      //         minDistance = distance;
+      //         clickedLine = lineGeometry.userData.lineId;
+      //       }
+      //     }
+      //   }
+      // }
+
+      // if (clickedLine !== null) {
+      //   console.log(`Line Number Selected: ${clickedLine - 1}`);
+      //   wallEditor.clickedLine = clickedLine - 1;
+      // }
+      // ////////////////////////Testing
+
       subAreaDrawer.addPoints(event);
     }
 
@@ -78,7 +148,6 @@ class MouseClickActivity {
     }
 
     if (event.ctrlKey && !wallEditor.activateAddPoints) {
-      console.log(wallEditor.activateAddPoints);
       subAreaDrawer.stretchSubArea(event);
     }
   }
@@ -127,7 +196,6 @@ class MouseClickActivity {
   }
 
   update(event) {
-    console.log("check ->", event.clientX, event.clientY);
     const mouse = new THREE.Vector2(
       (event.clientX / window.innerWidth) * 2 - 1,
       -(event.clientY / window.innerHeight) * 2 + 1
@@ -242,19 +310,19 @@ class MouseClickActivity {
         // console.log(wallEditor.spaceBetweenLines)
       });
 
-    document
-      .getElementById("edgePoint")
-      .addEventListener("change", function (event) {
-        if (event.target && event.target.matches('input[name="edges"]')) {
-          const selectedEdge = document.querySelector(
-            'input[name="edges"]:checked'
-          );
-          if (selectedEdge) {
-            wallEditor.selectedLine = selectedEdge.value;
-            console.log("Selected Line:", wallEditor.selectedLine);
-          }
-        }
-      });
+    // document
+    //   .getElementById("edgePoint")
+    //   .addEventListener("change", function (event) {
+    //     if (event.target && event.target.matches('input[name="edges"]')) {
+    //       const selectedEdge = document.querySelector(
+    //         'input[name="edges"]:checked'
+    //       );
+    //       if (selectedEdge) {
+    //         wallEditor.selectedLine = selectedEdge.value;
+    //         console.log("Selected Line:", wallEditor.selectedLine);
+    //       }
+    //     }
+    //   });
 
     document.getElementById("addPoints").addEventListener("click", () => {
       wallEditor.activateAddPoints = !wallEditor.activateAddPoints;
@@ -291,7 +359,6 @@ class MouseClickActivity {
     //     return { x: avgX, y: avgY };
     //   }
 
-    //   // Convert NDC to screen coordinates
     //   function calculatePolygonArea() {
     //     // let vertices = wallEditor.spherePosition[1].map((v) => ({
     //     //   x: ((v.x + 1) / 2) * window.innerWidth,

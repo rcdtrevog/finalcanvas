@@ -10,6 +10,7 @@ window.wallEditor = {};
 
 // wallEditor.selectedEdgePoint = 1;
 wallEditor.selectedLine = 1;
+wallEditor.clickedLine = 1;
 
 wallEditor.testing = {}
 

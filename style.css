@@ -82,7 +82,7 @@ canvas {
 #alignments,
 #wallPatterns,
 #colors,
-#edgePoint,
+/* #edgePoint, */
 #addPoints {
   position: absolute;
   top: 130px;
@@ -93,11 +93,11 @@ canvas {
   border: none;
   display: block;
 }
-#edgePoint{
+/* #edgePoint{
   top:410px;
-}
+} */
 #addPoints{
-  top:450px;
+  top:410px;
   cursor: pointer;
 }
 .eachEdge{
